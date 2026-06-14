@@ -57,7 +57,7 @@ class BookDB:
         logger.debug("Update book %s in database: %s", id, data)
         cursor.execute(
             f"UPDATE books SET {set_clause} WHERE id = %s",
-            list(data.keys()) + [id]
+            list(data.values()) + [id]
         )
         conn.commit()
 
@@ -143,19 +143,20 @@ class BookDB:
         logger.debug("Gets count of borrowed books by member %s in database", member_id)
         cursor.execute("SELECT COUNT(*) FROM books WHERE borrowed_by_member_id = %s", (member_id,))
         count = cursor.fetchone()
+        print("aaaaaa", count)
 
         cursor.close()
         conn.close()
-        return count
+        return count[0]
     
 
     def is_available(id):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT is_available FROM BOOKS WHERE id = %s", (id,))
+        cursor.execute("SELECT is_available FROM books WHERE id = %s", (id,))
         is_available = cursor.fetchone()
 
         cursor.close()
         conn.close()
-        return is_available
+        return is_available[0]

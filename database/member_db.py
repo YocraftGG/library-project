@@ -54,7 +54,7 @@ class MemberDB:
         set_clouse = ", ".join(f"{key}= %s" for key in data.keys())
 
         logger.debug("Update member %s in database: %s", id, data)
-        cursor.execute(f"UPDATE members SET {set_clouse} WHERE id = %s", list(data.vales()) + [id])
+        cursor.execute(f"UPDATE members SET {set_clouse} WHERE id = %s", list(data.values()) + [id])
         conn.commit()
 
         cursor.close()
@@ -151,7 +151,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT is_active FROM BOOKS WHERE id = %s", (id,))
+        cursor.execute("SELECT is_active FROM members WHERE id = %s", (id,))
         is_active = cursor.fetchone()
 
         cursor.close()

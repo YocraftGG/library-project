@@ -19,6 +19,7 @@ class MemberDB:
 
         cursor.close()
         conn.close()
+        return
 
 
     def get_all_members():
@@ -151,6 +152,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("Gets member %s activity", id)
         cursor.execute("SELECT is_active FROM members WHERE id = %s", (id,))
         is_active = cursor.fetchone()
 

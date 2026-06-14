@@ -17,9 +17,11 @@ class MemberDB:
         )
         conn.commit()
 
+        new_id = cursor.lastrowid
+
         cursor.close()
         conn.close()
-        return
+        return new_id
 
 
     def get_all_members():
@@ -98,18 +100,6 @@ class MemberDB:
         conn.close()
 
 
-    def unincrement_borrows(id):
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        logger.debug("Incrementes total borrows of member %s in database", id)
-        cursor.execute("UPDATE members SET total_borrows = total_borrows - 1 WHERE id = %s", (id,))
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-
     def count_active_members():
         conn = get_connection()
         cursor = conn.cursor()
@@ -154,7 +144,7 @@ class MemberDB:
 
         logger.debug("Gets member %s activity", id)
         cursor.execute("SELECT is_active FROM members WHERE id = %s", (id,))
-        is_active = cursor.fetchone()
+        is_active = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()

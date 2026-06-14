@@ -15,17 +15,18 @@ router = APIRouter()
 
 @router.post("", status_code=201)
 def create_member(body: dict):
-    logger.debug("Got post request for member: %s", body)
+    logger.debug("Creates member %s", body)
     validate("name", body)
     validate("email", body)
 
     try:
-        MemberDB.create_member(body)
+        new_id = MemberDB.create_member(body)
+        logger.info("Created member %s successfully", new_id)
+        return {"message": "Created a new member successfully", "id": new_id}
     except mysql.connector.Error:
         logger.warning("Email %s already exists", body["email"])
         raise HTTPException(status_code=400, detail=f"Email {body["email"]} already exists")
     
-    logger.info("Created a new member: %s", body)
 
 
 @router.get("")
@@ -46,11 +47,13 @@ def get_member(id: int):
 
 @router.patch("/{id}")
 def update_member(id: int, body: dict):
-    logger.info("Updates member %s", id)
+    logger.debug("Updates member %s", id)
     if MemberDB.get_member_by_id(id) is None:
         raise HTTPException(status_code=404, detail=f"The member {id} was not found")
     try:
         MemberDB.update_member(id, body)
+        logger.info("Created member %s successfully", id)
+        return {"message": "Updated member successfully", "id": id}
     except mysql.connector.Error:
         logger.warning("Email %s already exists", body["email"])
         raise HTTPException(status_code=400, detail=f"Email {body["email"]} already exists")
@@ -58,15 +61,19 @@ def update_member(id: int, body: dict):
 
 @router.patch("/{id}/deactivate")
 def deactivate_member(id: int):
+    logger.debug("Deactivates member %s", id)
     if MemberDB.get_member_by_id(id) is None:
         raise HTTPException(status_code=404, detail=f"The member {id} was not found")
-    logger.debug("activates member %s", id)
     MemberDB.deactivate_member(id)
+    logger.info("Deactivated member %s successfully", id)
+    return {"message": "Deactivated member successfully", "id": id}
 
 
 @router.patch("/{id}/activate")
 def activate_member(id: int):
+    logger.debug("Activates member %s", id)
     if MemberDB.get_member_by_id(id) is None:
         raise HTTPException(status_code=404, detail=f"The member {id} was not found")
-    logger.debug("deactivates member %s", id)
     MemberDB.activate_member(id)
+    logger.info("Activated member %s successfully", id)
+    return {"message": "Activated member successfully", "id": id}

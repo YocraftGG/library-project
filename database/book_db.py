@@ -18,8 +18,11 @@ class BookDB:
         )
         conn.commit()
 
+        new_id = cursor.lastrowid
+
         cursor.close()
         conn.close()
+        return new_id
 
     
     def get_all_books():

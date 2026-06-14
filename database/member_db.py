@@ -1,4 +1,4 @@
-from db_connection import get_connection
+from database.db_connection import get_connection
 from logs.setup_logger import logger
 
 
@@ -7,7 +7,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        logger.debug("creates a new member in database: %s", data)
+        logger.debug("Creates a new member in database: %s", data)
         cursor.execute(
         """
         INSERT INTO members (name, email, is_active, total_borrows) 
@@ -25,7 +25,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        logger.debug("gets all members from database")
+        logger.debug("Gets all members from database")
         cursor.execute("SELECT * FROM members")
         rows = cursor.fetchall()
 
@@ -38,7 +38,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        logger.debug("gets member %s from database", id)
+        logger.debug("Gets member %s from database", id)
         cursor.execute("SELECT * FROM members WHERE id = %s", (id,))
         row = cursor.fetchone()
         
@@ -53,7 +53,7 @@ class MemberDB:
 
         set_clouse = ", ".join(f"{key}= %s" for key in data.keys())
 
-        logger.debug("update member %s in database: %s", id, data)
+        logger.debug("Update member %s in database: %s", id, data)
         cursor.execute(f"UPDATE members SET {set_clouse} WHERE id = %s", list(data.vales()) + [id])
         conn.commit()
 
@@ -77,7 +77,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        logger.debug("activates member %s in database", id)
+        logger.debug("Activates member %s in database", id)
         cursor.execute("UPDATE members SET is_active = TRUE WHERE id = %s", (id,))
         conn.commit()
 
@@ -89,8 +89,20 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        logger.debug("incrementes total borrows of member %s in database", id)
+        logger.debug("Incrementes total borrows of member %s in database", id)
         cursor.execute("UPDATE members SET total_borrows = total_borrows + 1 WHERE id = %s", (id,))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+
+    def unincrement_borrows(id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        logger.debug("Incrementes total borrows of member %s in database", id)
+        cursor.execute("UPDATE members SET total_borrows = total_borrows - 1 WHERE id = %s", (id,))
         conn.commit()
 
         cursor.close()
@@ -113,7 +125,7 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        logger.debug("gets count of active member %s in database", id)
+        logger.debug("Gets count of active member %s in database", id)
         cursor.execute("SELECT * FROM members WHERE is_active = TRUE")
         count = cursor.fetchone()
 
@@ -126,10 +138,22 @@ class MemberDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        logger.debug("gets the member with the most total borrows in database")
+        logger.debug("Gets the member with the most total borrows in database")
         cursor.execute("SELECT * FROM members ORDER BY total_borrows DESC LIMIT 1")
         top = cursor.fetchone()
 
         cursor.close()
         conn.close()
         return top
+    
+
+    def is_active(id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT is_active FROM BOOKS WHERE id = %s", (id,))
+        is_active = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+        return is_active

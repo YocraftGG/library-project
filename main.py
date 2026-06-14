@@ -1,9 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 import uvicorn
 
+from logs.setup_logger import logger
 from database import db_connection
+from routes import book_routes
 
 app = FastAPI()
+app.include_router(book_routes.router, prefix="/books")
 
 def main():
     db_connection.create_tables()

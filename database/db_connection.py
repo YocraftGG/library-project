@@ -20,7 +20,7 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS books (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(50) NOT NULL,
-            AUTHOR VARCHAR(50) NOT NULL,
+            author VARCHAR(50) NOT NULL,
             genre ENUM("Fiction", "Non-Fiction", "Science", "History", "Other") NOT NULL,
             is_available BOOLEAN NOT NULL,
             borrowed_by_member_id INT NULL

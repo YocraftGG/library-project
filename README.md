@@ -5,11 +5,13 @@
 
 ## הקוד ליצירת docker עם MySql
 
+```bash
 docker run --name mysql-library \
     -e MYSQL_ROOT_PASSWORD=root \
     -e MYSQL_DATABASE=library_db \
     -p 3306:3306 \
     -d mysql:8
+```
 
 ## מבנה התיקיות
 

@@ -83,8 +83,13 @@ def borrow_book(id: int, member_id: int):
 
 @router.patch("/{id}/return/{member_id}")
 def return_book(id: int, member_id: int):
-    if BookDB.get_book_by_id(id) is None:
+    book = BookDB.get_book_by_id(id)
+    if book is None:
         raise HTTPException(status_code=404, detail=f"The book {id} was not found")
+    if MemberDB.get_member_by_id(member_id) is None:
+        raise HTTPException(status_code=404, detail=f"The member {member_id} was not found")
+    if book["borrowed_by_member_id"] != member_id:
+        raise HTTPException(status_code=400, detail=f"The book {id} is not borrowes by member {member_id}")
     logger.debug("Member %s tries to return book %s", member_id, id)
     BookDB.set_available(id, True, None)
     MemberDB.unincrement_borrows(member_id)

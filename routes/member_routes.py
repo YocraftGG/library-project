@@ -58,11 +58,15 @@ def update_member(id: int, body: dict):
 
 @router.patch("/{id}/deactivate")
 def deactivate_member(id: int):
+    if MemberDB.get_member_by_id(id) is None:
+        raise HTTPException(status_code=404, detail=f"The member {id} was not found")
     logger.debug("activates member %s", id)
     MemberDB.deactivate_member(id)
 
 
 @router.patch("/{id}/activate")
 def activate_member(id: int):
+    if MemberDB.get_member_by_id(id) is None:
+        raise HTTPException(status_code=404, detail=f"The member {id} was not found")
     logger.debug("deactivates member %s", id)
     MemberDB.activate_member(id)

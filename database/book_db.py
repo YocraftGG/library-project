@@ -1,11 +1,14 @@
 from db_connection import get_connection
 
+from logs.setup_logger import logger
+
 
 class BookDB:
     def create_book(data):
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("creates a new book in database: %s", data)
         cursor.execute(
         """
         INSERT INTO books (title, author, genre, is_avalible) 
@@ -23,6 +26,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
+        logger.debug("gets all books from database")
         cursor.execute("SELECT * FROM books")
         rows = cursor.fetchall()
 
@@ -35,6 +39,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
+        logger.debug("gets book %s from database", id)
         cursor.execute("SELECT * FROM books WHERE id = %s",(id,))
         row = cursor.fetchone()
 
@@ -49,6 +54,7 @@ class BookDB:
 
         set_clause = ", ".join(f"{key} = %s" for key in data.keys())
 
+        logger.debug("update book %s in database: %s", id, data)
         cursor.execute(
             f"UPDATE books SET {set_clause} WHERE id = %s",
             list(data.keys()) + [id]
@@ -59,10 +65,11 @@ class BookDB:
         conn.close()
     
 
-    def update_book(id, val, member_id):
+    def set_available(id, val, member_id):
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("makes book %s %s in database", id, val)
         cursor.execute(
             """
             UPDATE books 
@@ -81,6 +88,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("gets count of total books in database")
         cursor.execute("SELECT COUNT(*) FROM books")
         count = cursor.fetchone()
 
@@ -93,6 +101,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("gets count of available books in database")
         cursor.execute("SELECT COUNT(*) FROM books WHERE is_available = TRUE")
         count = cursor.fetchone()
 
@@ -105,6 +114,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("gets count of borrowed books in database")
         cursor.execute("SELECT COUNT(*) FROM books WHERE is_available = FALSE")
         count = cursor.fetchone()
 
@@ -113,22 +123,11 @@ class BookDB:
         return count
     
 
-    def count_borrowed_books():
+    def count_by_genre(genre):
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT COUNT(*) FROM books WHERE is_available = FALSE")
-        count = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-        return count
-    
-
-    def count_borrowed_books(genre):
-        conn = get_connection()
-        cursor = conn.cursor()
-
+        logger.debug("gets count of %s books in database", genre)
         cursor.execute("SELECT COUNT(*) FROM books WHERE genre = %s", (genre,))
         count = cursor.fetchone()
 
@@ -141,6 +140,7 @@ class BookDB:
         conn = get_connection()
         cursor = conn.cursor()
 
+        logger.debug("gets count of borrowed books by member %s in database", member_id)
         cursor.execute("SELECT COUNT(*) FROM books WHERE borrowed_by_member_id = %s", (member_id,))
         count = cursor.fetchone()
 

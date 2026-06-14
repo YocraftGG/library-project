@@ -1,4 +1,3 @@
-import mysql.connector
 from db_connection import get_connection
 
 
@@ -10,9 +9,9 @@ class BookDB:
         cursor.execute(
         """
         INSERT INTO books (title, author, genre, is_avalible) 
-        VALUES (%s, %s, %s, %s)
+        VALUES (%s, %s, %s, TRUE)
         """,
-        (data["title"], data["author"], data["genre"], True)
+        (data["title"], data["author"], data["genre"])
         )
         conn.commit()
 
@@ -90,7 +89,7 @@ class BookDB:
         return count
     
 
-    def count_available_books()():
+    def count_available_books():
         conn = get_connection()
         cursor = conn.cursor()
 

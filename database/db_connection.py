@@ -35,7 +35,7 @@ def create_tables():
             name VARCHAR(50) NOT NULL,
             email VARCHAR(200) UNIQUE NOT NULL,
             is_active BOOLEAN NOT NULL,
-            total_borrows INT NULL
+            total_borrows INT NOT NULL
         );
         """
     )

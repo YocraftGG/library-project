@@ -8,8 +8,8 @@ from database.member_db import MemberDB
 
 def validate(field: str, body: dict):
     if field not in body:
-        logger.warning()
-        HTTPException(status_code=400, detail=f"Field {field} is require") 
+        logger.warning("Field %s is missing", field)
+        raise HTTPException(status_code=400, detail=f"Field {field} is required") 
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ def create_book(body: dict):
         return {"message": "Created a new book successfully", "id": new_id}
     except mysql.connector.Error as e:
         if e.errno == 1265:
-            logger.warning("Got unvalid genre: %s", body.get("genre", ""))
+            logger.warning("Got invalid genre: %s", body.get("genre", ""))
             raise HTTPException(status_code=400, detail="Ganre can only be 'Fiction' | 'Non-Fiction' | 'Science' | 'History' | 'Other'")
         else:
             raise HTTPException(status_code=400, detail=str(e))
@@ -53,13 +53,15 @@ def update_book(id: int, body: dict):
     logger.debug("Updates book %s", id)
     if BookDB.get_book_by_id(id) is None:
         raise HTTPException(status_code=404, detail=f"The book {id} was not found")
+    if not body:
+        raise HTTPException(status_code=400, detail="No fields provided")
     try:
         BookDB.update_book(id, body)
         logger.info("Created book %s successfully", id)
         return {"message": "Updated book successfully", "id": id}
     except mysql.connector.Error as e:
         if e.errno == 1265:
-            logger.warning("Got unvalid genre: %s", body.get("genre", ""))
+            logger.warning("Got invalid genre: %s", body.get("genre", ""))
             raise HTTPException(status_code=400, detail="Ganre can only be 'Fiction' | 'Non-Fiction' | 'Science' | 'History' | 'Other'")
         else:
             raise HTTPException(status_code=500, detail=str(e))
@@ -104,7 +106,7 @@ def return_book(id: int, member_id: int):
     if MemberDB.get_member_by_id(member_id) is None:
         logger.warning("The member %s was not found", member_id)
         raise HTTPException(status_code=404, detail=f"The member {member_id} was not found")
-    if not BookDB.is_available(id):
+    if BookDB.is_available(id):
         logger.warning("The book %s is not borrowed")
         raise HTTPException(status_code=400, detail=f"The book {id} is not borrowed")
     if book["borrowed_by_member_id"] != member_id:

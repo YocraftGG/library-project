@@ -93,7 +93,7 @@ class BookDB:
 
         logger.debug("Gets count of total books in database")
         cursor.execute("SELECT COUNT(*) FROM books")
-        count = cursor.fetchone()
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
@@ -106,7 +106,7 @@ class BookDB:
 
         logger.debug("Gets count of available books in database")
         cursor.execute("SELECT COUNT(*) FROM books WHERE is_available = TRUE")
-        count = cursor.fetchone()
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
@@ -119,7 +119,7 @@ class BookDB:
 
         logger.debug("Gets count of borrowed books in database")
         cursor.execute("SELECT COUNT(*) FROM books WHERE is_available = FALSE")
-        count = cursor.fetchone()
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
@@ -132,7 +132,7 @@ class BookDB:
 
         logger.debug("Gets count of %s books in database", genre)
         cursor.execute("SELECT COUNT(*) FROM books WHERE genre = %s", (genre,))
-        count = cursor.fetchone()
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
@@ -145,12 +145,11 @@ class BookDB:
 
         logger.debug("Gets count of borrowed books by member %s in database", member_id)
         cursor.execute("SELECT COUNT(*) FROM books WHERE borrowed_by_member_id = %s", (member_id,))
-        count = cursor.fetchone()
-        print("aaaaaa", count)
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
-        return count[0]
+        return count
     
 
     def is_available(id):
@@ -158,8 +157,8 @@ class BookDB:
         cursor = conn.cursor()
 
         cursor.execute("SELECT is_available FROM books WHERE id = %s", (id,))
-        is_available = cursor.fetchone()
+        is_available = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
-        return is_available[0]
+        return is_available

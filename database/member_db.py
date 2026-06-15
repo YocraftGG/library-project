@@ -46,7 +46,7 @@ class MemberDB:
         row = cursor.fetchone()
         
         cursor.close()
-        conn.cursor()
+        conn.close()
         return row
     
 
@@ -98,18 +98,6 @@ class MemberDB:
 
         cursor.close()
         conn.close()
-
-
-    def count_active_members():
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT COUNT(*) FROM members WHERE is_active = TRUE")
-        count = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-        return count
     
 
     def count_active_members():
@@ -117,8 +105,8 @@ class MemberDB:
         cursor = conn.cursor()
 
         logger.debug("Gets count of active member %s in database", id)
-        cursor.execute("SELECT * FROM members WHERE is_active = TRUE")
-        count = cursor.fetchone()
+        cursor.execute("SELECT COUNT(*) FROM members WHERE is_active = TRUE")
+        count = cursor.fetchone()[0]
 
         cursor.close()
         conn.close()
@@ -127,7 +115,7 @@ class MemberDB:
 
     def get_top_member():
         conn = get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
         logger.debug("Gets the member with the most total borrows in database")
         cursor.execute("SELECT * FROM members ORDER BY total_borrows DESC LIMIT 1")

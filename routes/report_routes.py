@@ -23,9 +23,10 @@ def get_summary():
 @router.get("/books-by-genre")
 def get_books_by_genre ():
     logger.info("Returns count of books by genres")
-    books_by_genre = {}
+    books_by_genre = []
     for genre in genres:
-        books_by_genre[genre] = BookDB.count_by_genre(genre)
+        count = BookDB.count_by_genre(genre)
+        books_by_genre.append({"Genre": genre, "COUNT": count})
     return books_by_genre
 
 

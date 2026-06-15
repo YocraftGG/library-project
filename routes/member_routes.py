@@ -59,7 +59,7 @@ def update_member(id: int, body: dict):
         MemberDB.update_member(id, body)
         logger.info("Created member %s successfully", id)
         return {"message": "Updated member successfully", "id": id}
-    except mysql.connector.Error:
+    except mysql.connector.Error as e:
         if e.errno == 1062:
             logger.warning("Email %s already exists", body["email"])
             raise HTTPException(status_code=400, detail=f"Email {body['email']} already exists")
